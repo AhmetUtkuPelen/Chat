@@ -1,13 +1,11 @@
-import {Router} from 'express';
-import express from 'express';
-import {Register,Login,LogOut} from '../Controllers/AuthenticationController';
+import express, { Router } from 'express';
+import { Login, LogOut, Register } from '../Controllers/AuthenticationController';
 
-const AuthenticationRouter:Router = express.Router();
+const AuthenticationRouter: Router = express.Router();
 
 
-AuthenticationRouter.post('/register',Register)
-AuthenticationRouter.post('/login',Login)
-AuthenticationRouter.post('/logout',LogOut)
-
+AuthenticationRouter.post('/register', Register as express.RequestHandler);
+AuthenticationRouter.post('/login', Login as express.RequestHandler);
+AuthenticationRouter.post('/logout', LogOut as express.RequestHandler);
 
 export default AuthenticationRouter;

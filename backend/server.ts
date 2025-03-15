@@ -28,6 +28,7 @@ ConnectDataBase();
 
 // Routes
 app.use('/api/auth',AuthenticationRouter)
+
   
   // Start server
   app.listen(port, () => {
