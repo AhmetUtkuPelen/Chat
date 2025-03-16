@@ -2,7 +2,7 @@ import { CreateToken } from './../Utilities/CreateToken';
 import {Request, Response} from 'express';
 import User from '../Models/UserModel';
 import bcryptjs from 'bcryptjs';
-
+import cloudinary from '../Cloudinary/Cloudinary';
 
 
 
@@ -150,20 +150,86 @@ export const LogOut = async (req:Request,res:Response) => {
 
 
 // ? UPDATE PROFILE ? \\
-export const UpdateProfile = async (req:Request,res:Response) => {
-
-    const {fullName,email,profilePicture} = req.body;
-
+export const UpdateUserProfile = async (req:Request,res:Response) => {
     try {
+        const {fullName, email, profilePicture} = req.body;
+        const userId = req.user?._id;
         
-        const user = await User.findOne({email})
-
+        // ? Check if user is authenticated ? \\
+        if(!userId) {
+            return res.status(401).json({message:"Unauthorized"});
+        }
+        
+        // ? Validate inputs ? \\
+        if(!fullName || fullName.length < 3) {
+            return res.status(400).json({message:"Full Name Must Be At Least 3 Characters!"});
+        }
+        
+        if(!email || !email.includes("@")) {
+            return res.status(400).json({message:"Invalid Email Format!"});
+        }
+        
+        if(!profilePicture) {
+            return res.status(400).json({message:"Profile Picture Is Required!"});
+        }
+        
+        // ? Check if email is already taken by another user ? \\
+        const existingUser = await User.findOne({ email, _id: { $ne: userId } });
+        if(existingUser) {
+            return res.status(400).json({message:"Email Already In Use By Another Account!"});
+        }
+        
+        // ? Upload image to Cloudinary ? \\
+        const uploadedProfilePicture = await cloudinary.uploader.upload(profilePicture, {
+            folder: "profile_pictures",
+            transformation: [{ width: 500, height: 500, crop: "limit" }]
+        });
+        
+        // ? Update user ? \\
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                fullName,
+                email,
+                profilePicture: uploadedProfilePicture.secure_url
+            },
+            {new: true}
+        );
+        
+        if(!updatedUser) {
+            return res.status(404).json({message:"User Not Found!"});
+        }
+        
+        // ? Return updated user data ? \\
+        return res.status(200).json({
+            _id: updatedUser._id,
+            fullName: updatedUser.fullName,
+            email: updatedUser.email,
+            profilePicture: updatedUser.profilePicture
+        });
+        
     } catch (error) {
-        
-        res.status(500).json({message:"Internal Server Error"})
         console.log(error);
-
+        res.status(500).json({message:"Internal Server Error"});
     }
-
 }
 // ? UPDATE PROFILE ? \\
+
+
+// ? CHECK AUTHENTICATION ? \\
+export const CheckAuthentication = async (req:Request,res:Response) => {
+
+    try {
+
+        res.status(200).json(req.user)
+
+    } catch (error) {        
+        if(error instanceof Error){
+            res.status(500).json({message:"Something Went Wrong In Check Authentication !"})
+            console.log(error.message);    
+        }
+    }
+
+}   
+
+// ? CHECK AUTHENTICATION ? \\
