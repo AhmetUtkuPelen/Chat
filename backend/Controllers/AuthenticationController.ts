@@ -3,6 +3,10 @@ import {Request, Response} from 'express';
 import User from '../Models/UserModel';
 import bcryptjs from 'bcryptjs';
 
+
+
+
+
 // ? REGISTER ? \\
 export const Register = async (req:Request,res:Response) => {
 
@@ -78,12 +82,88 @@ export const Register = async (req:Request,res:Response) => {
 
 
 
+
+// ? LOGIN ? \\
 export const Login = async (req:Request,res:Response) => {
 
+    const {email,password} = req.body;
+
+    try {
+        
+        const user = await User.findOne({email})
+
+        if(!user){
+            return res.status(400).json({message:"Credentials Are Invalid , Please Try Again !"})
+        }
+
+        const IsPasswordCorrect = await bcryptjs.compare(password,user.password)
+
+        if(!IsPasswordCorrect){
+            return res.status(400).json({message:"Credentials Are Invalid , Please Try Again !"})
+        }
+
+        CreateToken(user._id as any, res)
+
+        res.status(200).json({
+            _id:user._id,
+            fullName:user.fullName,
+            email:user.email,
+            profilePicture:user.profilePicture
+        })
+
+    } catch (error) {
+        
+        res.status(500).json({message:"Internal Server Error"})
+        console.log(error);
+
+    }
+
 }
+// ? LOGIN ? \\
 
 
 
+
+// ? LOGOUT ? \\
 export const LogOut = async (req:Request,res:Response) => {
 
+    try {
+        
+        // ? kill the cookie ? \\
+        res.cookie("jwt","",{
+            maxAge:0
+        })
+
+        res.status(200).json({message:"User Logged Out Successfully !"})
+
+    } catch (error) {
+        
+        res.status(500).json({message:"Internal Server Error"})
+        console.log(error);
+
+    }
+
 }
+// ? LOGOUT ? \\
+
+
+
+
+// ? UPDATE PROFILE ? \\
+export const UpdateProfile = async (req:Request,res:Response) => {
+
+    const {fullName,email,profilePicture} = req.body;
+
+    try {
+        
+        const user = await User.findOne({email})
+
+    } catch (error) {
+        
+        res.status(500).json({message:"Internal Server Error"})
+        console.log(error);
+
+    }
+
+}
+// ? UPDATE PROFILE ? \\
