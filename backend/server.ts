@@ -5,32 +5,46 @@ import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import AuthenticationRouter from './Routes/AuthenticationRoutes';
+import MessageRouter from './Routes/MessageRouter';
 import {ConnectDataBase} from './DataBase/DataBase'
 
+
 dotenv.config();
+
 
 const app: Express = express();
 const port = process.env.PORT || 9999;
 
 
-// Middleware
+
+// ? Middleware ? \\
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(helmet());
+// ? Middleware ? \\
 
 
-// Database Connection
+
+// ? Database Connection ? \\
 ConnectDataBase();
+// ? Database Connection ? \\
 
 
-// Routes
+
+
+// ? Routes ? \\
 app.use('/api/auth',AuthenticationRouter)
+app.use('/api/message',MessageRouter)
+// ? Routes ? \\
+
+
 
   
-  // Start server
+  // ? Start server ? \\
   app.listen(port, () => {
     console.log(`Server is up and running at http://localhost:${port}`);
   });
+  // ? Start server ? \\
