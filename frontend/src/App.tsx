@@ -23,6 +23,7 @@ function App() {
     isCheckingAuth: state.isCheckingAuth
   }))
 
+  
   useEffect(() => {
     checkAuth();
   },[])
