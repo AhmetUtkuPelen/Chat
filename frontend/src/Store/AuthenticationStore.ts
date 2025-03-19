@@ -37,6 +37,10 @@ export const useAuthenticationStore = create<AuthState>((set) => ({
         } finally {
             set({ isCheckingAuth: false });
         }
+    },
+
+    register: async (data) => {
+
     }
 
 }))
