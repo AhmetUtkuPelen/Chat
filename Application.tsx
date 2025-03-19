@@ -13,15 +13,16 @@ import { Toaster } from "react-hot-toast"
 
 
 function App() {
-
+  // Use individual selectors to avoid infinite loop
   const authUser = useAuthenticationStore(state => state.authUser);
   const checkAuth = useAuthenticationStore(state => state.checkAuth);
   const isCheckingAuth = useAuthenticationStore(state => state.isCheckingAuth);
   
   useEffect(() => {
-
+    // Only check auth once when component mounts
     checkAuth();
     
+    // Safety timeout to prevent infinite loading
     const timer = setTimeout(() => {
       if (useAuthenticationStore.getState().isCheckingAuth) {
         useAuthenticationStore.setState({ isCheckingAuth: false });
@@ -29,7 +30,7 @@ function App() {
     }, 3000);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, []); // Empty dependency array
   
   if(isCheckingAuth) {
     return (

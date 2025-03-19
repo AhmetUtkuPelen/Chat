@@ -1,34 +1,62 @@
 import { useState } from "react"
 import { useAuthenticationStore } from "../../Store/AuthenticationStore"
-import { Lock, Mail, MessageSquare, User } from "lucide-react"
+import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User } from "lucide-react"
+import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 
 const Register = () => {
 
   interface FormData {
-    fullName:string,
-    email:string,
-    password:string
+    fullName: string,
+    email: string,
+    password: string
   }
 
+  const [showMyPassword, setShowMyPassword] = useState<boolean>(false)
+  const [formData, setFormData] = useState<FormData>()
+  
 
-  const [showMyPassword,setShowMyPassword] = useState<boolean>(false)
-  const [formData,setFormData] = useState<FormData>()
-  const [register,setRegister] = useAuthenticationStore()
+  const register = useAuthenticationStore(state => state.register);
+  const isRegistering = useAuthenticationStore(state => state.isRegistering);
 
 
-  const validateForm = () => {}
+
+  // ? Validate Form ? \\
+  const ValidateForm = () => {
+
+    if(!formData?.fullName.trim()) return toast.error("Full Name Is Required !");
+
+    if(!formData?.email.trim()) return toast.error("Email Is Required !");
+
+    if (!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid Email Format !");
+
+    if(!formData?.password.trim()) return toast.error("Password Is Required !");
+
+    if(formData?.password.length < 6) return toast.error("Password Must Be At Least 6 Characters Long !");
+
+    return true;
+
+  }
+  // ? Validate Form ? \\
 
 
+  // ? Submit Form ? \\
   const SubmitForm = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const successfulForm = ValidateForm();
+
+    if(successfulForm === true && formData) register(formData)
+
   }
+  // ? Submit Form ? \\
+
 
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="min-h-screen grid">
       
-      {/* ? LEFT ? */}
       <div className="flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center mb-8">
@@ -36,8 +64,8 @@ const Register = () => {
               <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                 <MessageSquare className="size-6 text-primary"/>
               </div>
-              <h1 className="text-2xl font-bold mt-2">Create Account</h1>
-              <p className="text-base-content/60">Get Started With Your Free Account</p>
+              <h1 className="text-2xl font-bold mt-2 text-blue-600">Create Account</h1>
+              <p className="text-base-content/60">Connect With Your Friends and Stay In Touch</p>
             </div>
           </div>
 
@@ -45,7 +73,7 @@ const Register = () => {
             
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Full Name</span>
+                <span className="label-text text-lg text-blue-600 font-bold">Full Name</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -64,7 +92,7 @@ const Register = () => {
 
             <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">Email</span>
+                  <span className="label-text text-lg text-blue-600 font-bold">Email</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -80,7 +108,7 @@ const Register = () => {
 
             <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">Password</span>
+                  <span className="label-text text-lg text-blue-600 font-bold">Password</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -91,13 +119,36 @@ const Register = () => {
                     email: prev?.email || '',
                     password: e.target.value
                   }))}/>
-                  <button type="button" className="absoluute inset-y-0 right-0 pr-3 flex items-center" onClick={() =>setShowMyPassword(!showMyPassword)}>
-                    
+                  <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center" onClick={() =>setShowMyPassword(!showMyPassword)}>
+                    {showMyPassword ? (
+                      <EyeOff className="size-5 text-base-content/40"/>
+                    ) : (
+                      <Eye className="size-5 text-base-content/40"/>
+                    )}
                   </button>
                 </div>
             </div>
 
+            <button type="submit" className="btn btn-primary w-full" disabled={isRegistering}>
+              {isRegistering ? (
+                <>
+                  <Loader2 className="size-5 animate-spin"/>
+                </>
+              ) : (
+                "REGISTER"
+              )}
+            </button>
+
           </form>
+
+            <div className="text-center">
+              <p className="text-base-content/60">
+                You Already Have Account? {""}
+                <Link to={`/login`} className="link link-primary">
+                  LOGIN
+                </Link>
+              </p>
+            </div>
 
         </div>
       </div>
