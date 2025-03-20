@@ -41,7 +41,7 @@ ConnectDataBase();
 
 // ? Routes ? \\
 app.use('/api/auth',AuthenticationRouter)
-app.use('/api/message',MessageRouter)
+app.use('/api/messages',MessageRouter)
 // ? Routes ? \\
 
 
