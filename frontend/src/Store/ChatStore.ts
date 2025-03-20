@@ -4,7 +4,7 @@ import { axiosSetup } from "../Axios/Axios";
 
 
 // ? User Interface ? \\
-interface User {
+export interface User {
     _id: string;
     fullName: string;
     email: string;
