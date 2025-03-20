@@ -9,17 +9,17 @@ import { useAuthenticationStore } from "./Store/AuthenticationStore"
 import { useEffect } from "react"
 import { Loader } from "lucide-react"
 import { Toaster } from "react-hot-toast"
-
-
+import { ThemeStore } from "./Store/ThemeStore"
 
 function App() {
-
   const authUser = useAuthenticationStore(state => state.authUser);
   const checkAuth = useAuthenticationStore(state => state.checkAuth);
   const isCheckingAuth = useAuthenticationStore(state => state.isCheckingAuth);
   
-  useEffect(() => {
+  // Fix the theme access
+  const theme = ThemeStore(state => state.theme);
 
+  useEffect(() => {
     checkAuth();
     
     const timer = setTimeout(() => {
@@ -40,7 +40,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div data-theme={theme}>
       <Navbar/>
       <Routes>
         <Route path="/" element={<Home/>}/>
@@ -55,6 +55,3 @@ function App() {
 }
 
 export default App
-
-
-
