@@ -3,11 +3,15 @@ import { ChatStore } from "../../Store/ChatStore"
 import SkeletonSideBar from "../SkeletonSideBar/SkeletonSideBar";
 import { Users } from "lucide-react";
 import UserPng from "../../assets/user.png"
+import {User} from "../../Store/ChatStore"
 
 
-const SideBar = () => {
+export const SideBar = () => {
 
-    const {getUsers,users,selectedUser,selectUser,isUsersLoading} = ChatStore()
+    const users: User[] = ChatStore().users;
+    const filteredUsers = showOnlineOnly
+
+    const {getUsers,selectedUser,selectUser,isUsersLoading} = ChatStore()
     const [showOnlineOnly, setShowOnlineOnly] = useState<boolean>(false);
 
     const {OnlineUsers} = ChatStore()

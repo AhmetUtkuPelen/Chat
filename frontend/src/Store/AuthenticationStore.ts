@@ -10,6 +10,7 @@ interface AuthState {
     isLoggingIn: boolean;
     isUpdatingProfile: boolean;
     isCheckingAuth: boolean;
+    onlineUsers: string[];
     updateProfile: (data: {fullName: string, email: string, profilePicture: string}) => Promise<void>;
     checkAuth: () => Promise<void>;
     register: (data: {fullName: string, email: string, password: string}) => Promise<void>;
@@ -28,6 +29,8 @@ export const useAuthenticationStore = create<AuthState>((set) => ({
     isUpdatingProfile:false,
 
     isCheckingAuth:true,
+    
+    onlineUsers: [],
 
     
     checkAuth: async () => {
