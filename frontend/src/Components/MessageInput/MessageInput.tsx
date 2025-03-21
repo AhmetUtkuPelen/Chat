@@ -1,23 +1,73 @@
 import { useRef, useState } from "react"
 import { ChatStore } from "../../Store/ChatStore";
 import { Image, Send, X } from "lucide-react";
+import toast from "react-hot-toast";
 
 
 const MessageInput = () => {
 
   const [text,setText] = useState<string>("")
-  const [imagePreview,setImagePreview] = useState<string>("")
+  const [imagePreview,setImagePreview] = useState("")
 
   const {sendMessages} = ChatStore();
 
   const fileInput = useRef<HTMLInputElement>(null);
 
 
-  const HandleImageChange = async (e:React.ChangeEvent<HTMLInputElement>) => {}
+  // ? Handle Image Change ? \\
+  const HandleImageChange = async (e:React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
 
-  const RemoveImage = async () => {}
+    if(!file?.type.startsWith("image")){
+      toast.error("Please Select An Image !");
+      return;
+    }
 
-  const HandleSendMessage = async (e:React.FormEvent<HTMLFormElement>) => {}
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    }
+
+    reader.readAsDataURL(file);
+
+  }
+  // ? Handle Image Change ? \\
+
+
+  // ? Remove Image ? \\
+  const RemoveImage = async () => {
+
+    setImagePreview("");
+  
+    if(fileInput.current){
+      fileInput.current.value = "";
+    }
+
+  }
+  // ? Remove Image ? \\
+
+
+  // ? Handle Send Message ? \\
+  const HandleSendMessage = async (e:React.FormEvent<HTMLFormElement>) => {
+
+    e.preventDefault();
+
+    if(!text.trim() && !imagePreview) return;
+
+    try {
+      await sendMessages({
+        text:text.trim(),
+        image:imagePreview
+      })
+    } catch (error) {
+      console.log("Failed To Send Message !",error);
+      toast.error("Failed To Send Message !",{duration:3000});
+    }
+
+  }
+  // ? Handle Send Message ? \\
+
+
 
   return (
     <div className="p-4 w-full">
@@ -58,7 +108,6 @@ const MessageInput = () => {
             ref={fileInput}
             onChange={HandleImageChange}
           />
-
           <button
             type="button"
             className={`hidden sm:flex btn btn-circle
