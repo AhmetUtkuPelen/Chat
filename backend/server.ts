@@ -7,13 +7,17 @@ import helmet from 'helmet';
 import AuthenticationRouter from './Routes/AuthenticationRoutes';
 import MessageRouter from './Routes/MessageRouter';
 import {ConnectDataBase} from './DataBase/DataBase'
+import {app,server} from './Socket/Socket';
 
-
+// ? Config .env ? \\
 dotenv.config();
+// ? Config .env ? \\
 
 
-const app: Express = express();
+
+// ? PORT ? \\
 const port = process.env.PORT || 9999;
+// ? PORT ? \\
 
 
 
@@ -48,7 +52,7 @@ app.use('/api/messages',MessageRouter)
 
   
   // ? Start server ? \\
-  app.listen(port, () => {
+  server.listen(port, () => {
     console.log(`Server is up and running at http://localhost:${port}`);
   });
   // ? Start server ? \\

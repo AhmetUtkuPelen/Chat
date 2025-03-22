@@ -2,6 +2,8 @@ import {create} from "zustand";
 import { axiosSetup } from "../Axios/Axios";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { io } from "socket.io-client";
+import { Socket } from "socket.io-client";
 
 
 interface AuthState {
@@ -16,9 +18,12 @@ interface AuthState {
     register: (data: {fullName: string, email: string, password: string}) => Promise<void>;
     login: (data: {fullName: string, email: string, password: string}) => Promise<void>;
     logout: () => Promise<void>;
+    connectSocket: () => void;
+    disconnectSocket: () => void;
+    socket: Socket | null;
 }
 
-export const useAuthenticationStore = create<AuthState>((set) => ({
+export const useAuthenticationStore = create<AuthState>((set,get) => ({
 
     authUser:null,
 
@@ -32,11 +37,15 @@ export const useAuthenticationStore = create<AuthState>((set) => ({
     
     onlineUsers: [],
 
+    socket : null,
+
     
     checkAuth: async () => {
         try {
             const response = await axiosSetup.get(`/auth/check-authentication`);
             set({ authUser: response.data });
+
+            get().connectSocket();
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status !== 401) {
                 console.error("Authentication check error:", error);
@@ -53,6 +62,8 @@ export const useAuthenticationStore = create<AuthState>((set) => ({
             const response = await axiosSetup.post(`/auth/register`, data);
             set({ authUser: response.data });
             toast.success("User Registered Successfully !");
+
+            get().connectSocket();
         } catch (error) {
             toast.error("Something Went Wrong !");
             console.error("Registration error:", error);
@@ -66,6 +77,8 @@ export const useAuthenticationStore = create<AuthState>((set) => ({
             await axiosSetup.post(`/auth/logout`);
             set({ authUser: null });
             toast.success("Logged Out Successfully!");
+
+            get().disconnectSocket();
         } catch (error) {
             console.error("Logout error:", error);
             toast.error("Logout failed!");
@@ -78,6 +91,8 @@ export const useAuthenticationStore = create<AuthState>((set) => ({
             const response = await axiosSetup.post(`/auth/login`, data);
             set({ authUser: response.data });
             toast.success("User Logged In Successfully !");
+
+            get().connectSocket();
         } catch (error) {
             toast.error("Something Went Wrong !");
             console.error("Login error:", error);
@@ -98,6 +113,24 @@ export const useAuthenticationStore = create<AuthState>((set) => ({
         } finally {
             set({ isUpdatingProfile: false });
         }
+    },
+
+    connectSocket : async () => {
+
+        const {authUser} = get();
+
+        if(!authUser || get().socket?.connected) return;
+
+        const socket = io(import.meta.env.VITE_SOCKET_URL,{
+            withCredentials:true
+        })
+        
+        socket.connect();
+
+    },
+
+    disconnectSocket : async () => {
+
     },
 
 }))
