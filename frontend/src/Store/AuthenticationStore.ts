@@ -122,14 +122,26 @@ export const useAuthenticationStore = create<AuthState>((set,get) => ({
         if(!authUser || get().socket?.connected) return;
 
         const socket = io(import.meta.env.VITE_SOCKET_URL,{
-            withCredentials:true
+            query:{
+                userId:authUser?._id
+            }
         })
         
         socket.connect();
 
+        set({socket:socket});
+
+        socket.on("getOnlineUsers",(users:string[]) => {
+            set({onlineUsers:users})
+        })
+
     },
 
     disconnectSocket : async () => {
+
+        if(get().socket?.connected) get().socket?.disconnect();
+
+        set({socket:null})
 
     },
 

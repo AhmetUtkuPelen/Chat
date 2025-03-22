@@ -14,13 +14,25 @@ const io = new Server(server,{
 })
 
 
+// ? Online Users ? \\
+const userSocket: Record<string, string> = {};
+
 
 io.on("connection",(socket:any) => {
 
     console.log(`User Connected ${socket.id}`);
 
+    const userId = socket.handshake.auth.userId;
+
+    if(userId) userSocket[userId] = socket.id;
+
+    // ? send events to all users ? \\
+    io.emit("getOnlineUsers",Object.keys(userSocket));
+
     socket.on("disconnect",() => {
         console.log(`User Disconnected ${socket.id}`);
+        delete userSocket[userId];
+        io.emit("getOnlineUsers",Object.keys(userSocket));
     })
 
 })

@@ -15,6 +15,7 @@ function App() {
   const authUser = useAuthenticationStore(state => state.authUser);
   const checkAuth = useAuthenticationStore(state => state.checkAuth);
   const isCheckingAuth = useAuthenticationStore(state => state.isCheckingAuth);
+  const onlineUsers = useAuthenticationStore(state => state.onlineUsers);
   
   // Fix the theme access
   const theme = ThemeStore(state => state.theme);
