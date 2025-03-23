@@ -1,10 +1,13 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "server.ts",
+  "main": "dist/server.js",
+  "type": "commonjs",
   "scripts": {
+    "build": "tsc",
     "dev": "nodemon server.ts",
-    "start": "node server.ts"
+    "start": "node dist/server.js",
+    "postinstall": "npm run build"
   },
   "keywords": [],
   "author": "",
@@ -46,3 +49,4 @@
     "socket.io": "^4.8.1"
   }
 }
+
