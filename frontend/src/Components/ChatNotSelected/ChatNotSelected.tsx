@@ -10,18 +10,18 @@ const ChatNotSelected = () => {
           <div className="relative">
             <div
               className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center
-             justify-center animate-bounce"
+             justify-center"
             >
-              <MessageSquare className="w-8 h-8 text-primary " />
+              <MessageSquare className="w-8 h-8 text-blue-600" />
             </div>
           </div>
         </div>
         {/* ICON */}
 
         {/* WELCOME */}
-        <h2 className="text-2xl font-bold">Welcome to Chatty!</h2>
+        <h2 className="text-2xl font-bold">Welcome to Chat App!</h2>
         <p className="text-base-content/60">
-          Select a conversation from the sidebar to start chatting
+          Select a Friend From Sidebar To Start Chatting
         </p>
         {/* WELCOME */}
 

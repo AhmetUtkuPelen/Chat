@@ -32,6 +32,10 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
   
+  useEffect(() => {
+    console.log("Online Users:", onlineUsers);
+  }, [onlineUsers]);
+
   if(isCheckingAuth) {
     return (
       <div className="flex items-center justify-center h-screen">

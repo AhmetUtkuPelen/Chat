@@ -2,6 +2,7 @@ import {Request, Response} from 'express';
 import User from '../Models/UserModel';
 import Message from '../Models/MessageModel';
 import cloudinary from '../Cloudinary/Cloudinary';
+import { GetSocketId, io } from '../Socket/Socket';
 
 
 
@@ -92,6 +93,10 @@ export const SendMessages = async (req:Request,res:Response) => {
         })
 
         await newMessage.save();
+
+        const SocketIdReceiver = await GetSocketId(userToChatId);
+
+        if(SocketIdReceiver) io.to(SocketIdReceiver).emit("getMessage", newMessage);
 
         res.status(200).json(newMessage);
 
