@@ -1,6 +1,5 @@
 import { Camera, Mail, User } from "lucide-react";
 import { useAuthenticationStore } from "../../Store/AuthenticationStore"
-import Bunny from "../../assets/Bunny.jpg"
 import { useState } from "react";
 
 const Profile = () => {
@@ -45,7 +44,7 @@ const Profile = () => {
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <img
-                src={selectedPicture || authUser?.profilePicture || Bunny}
+                src={selectedPicture || authUser?.profilePicture}
                 alt="Profile"
                 className="size-32 rounded-full object-cover border-4 "
               />
