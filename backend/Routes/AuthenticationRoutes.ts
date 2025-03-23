@@ -12,5 +12,4 @@ AuthenticationRouter.put('/updateProfile', AuthenticationMiddleware as express.R
 AuthenticationRouter.get('/check-authentication', AuthenticationMiddleware as express.RequestHandler, CheckAuthentication as express.RequestHandler);
 
 
-
 export default AuthenticationRouter;

@@ -46,23 +46,26 @@ interface ChatState {
 }
 
 export const ChatStore = create<ChatState>()((set, get) => ({
+    messages: [],
+    users: [],
+    selectedUser: null,
+    isUsersLoading: false,
+    isMessagesLoading: false,
+    OnlineUsers: useAuthenticationStore.getState().onlineUsers,
 
-    messages : [],
-    users : [],
-    selectedUser : null,
-    isUsersLoading : false,
-    isMessagesLoading : false,
-    OnlineUsers : [] as string[],
-
-    getUsers : async () => {
+    getUsers: async () => {
         set({ isUsersLoading: true });
         try {
             const response = await axiosSetup.get(`/messages/users`);
             set({ users: response.data });
+            
+            // Update OnlineUsers from AuthStore
+            set({ OnlineUsers: useAuthenticationStore.getState().onlineUsers });
+            console.log("Updated OnlineUsers in ChatStore:", useAuthenticationStore.getState().onlineUsers);
         } catch (error) {
-            toast.error("Something Went Wrong !");
+            toast.error("Something Went Wrong!");
             console.error("Users fetch error:", error);
-        }finally {
+        } finally {
             set({ isUsersLoading: false });
         }
     },
@@ -125,4 +128,11 @@ export const ChatStore = create<ChatState>()((set, get) => ({
 
     },
 
-}))
+}));
+
+// Subscribe to changes in the AuthStore's onlineUsers
+useAuthenticationStore.subscribe((state) => {
+    const onlineUsers = state.onlineUsers;
+    ChatStore.setState({ OnlineUsers: onlineUsers });
+    console.log("ChatStore OnlineUsers updated from subscription:", onlineUsers);
+});

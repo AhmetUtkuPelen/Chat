@@ -6,7 +6,10 @@ import { ChatStore } from "../../Store/ChatStore"
 
 const Home = () => {
 
+  // ? Selected User ? \\
   const {selectedUser} = ChatStore()
+  // ? Selected User ? \\
+
 
   return (
     <div className="h-screen bg-base-200">

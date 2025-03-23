@@ -6,8 +6,15 @@ import UserPng from "../../assets/user.png"
 
 const ChatHeader = () => {
 
+    // ? Selected user ? \\
     const { selectedUser, selectUser } = ChatStore() as { selectedUser: User | null, selectUser: (user: User | null) => void };
+    // ? Selected user ? \\
+
+
+    // ? Online users ? \\
     const { onlineUsers } = useAuthenticationStore();
+    // ? Online users ? \\
+
 
   return (
     <div className="p-2.5 border-b border-base-300">

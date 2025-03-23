@@ -9,6 +9,7 @@ import UserPng from "../../assets/user.png"
 
 const ChatComponent = () => {
 
+  // ? Chat Store ? \\
   const {selectedUser, messages, getMessages, isMessagesLoading,receiveMessages,unReceiveMessages} = ChatStore() as {
     selectedUser: { _id: string, profilePicture?: string, fullName?: string } | null,
     messages: any[],
@@ -17,8 +18,13 @@ const ChatComponent = () => {
     receiveMessages: () => void
     unReceiveMessages: () => void
   }
+  // ? Chat Store ? \\
 
+
+  // ? Authentication Store ? \\
   const {authUser} = useAuthenticationStore();
+  // ? Authentication Store ? \\
+
 
   const EndMessage = useRef<HTMLDivElement>(null);
 
@@ -38,12 +44,14 @@ const ChatComponent = () => {
 
   }, [selectedUser?._id,receiveMessages,unReceiveMessages])
 
+
   useEffect(() => {
     if(EndMessage.current && messages){
       EndMessage.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
+  
   if(isMessagesLoading) { 
     return (
     <div className="flex-1 flex flex-col overflow-auto">

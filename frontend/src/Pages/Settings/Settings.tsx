@@ -10,10 +10,13 @@ const Settings = () => {
   // ? themes ? \\
 
 
+  // ? Display Dummy Chat Messages ? \\
   const Display_Chat_Messages = [
     { id: 1, content: "Hello There ! How are you ?", isSent: false },
     { id: 2, content: "Wazzup ? I'm Good !", isSent: true },
   ];
+  // ? Display Dummy Chat Messages ? \\
+
 
 
   return (

@@ -6,11 +6,13 @@ import { useState } from "react";
 
 const Login = () => {
 
+  // ? Submit Form Interface ? \\
     interface FormData {
-      fullName: string,
       email: string,
       password: string
     }
+  // ? Submit Form Interface ? \\
+
   
     const [showMyPassword, setShowMyPassword] = useState<boolean>(false)
     const [formData, setFormData] = useState<FormData>()
@@ -18,16 +20,20 @@ const Login = () => {
     const login = useAuthenticationStore(state => state.login);
     const isLoggingIn = useAuthenticationStore(state => state.isLoggingIn);
 
+    // ? Submit Form ? \\
     const SubmitForm = async (e:React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+
       if (formData?.email && formData?.password) {
         await login({
-          fullName: formData.fullName || '',
           email: formData.email,
           password: formData.password
         });
       }
     }
+    // ? Submit Form ? \\
+
+
 
   return (
     <div className="h-screen grid">
@@ -64,7 +70,6 @@ const Login = () => {
                   placeholder="you@example.com"
                   value={formData?.email}
                   onChange={(e) => setFormData(prev => ({
-                    fullName: prev?.fullName || '',
                     email: e.target.value,
                     password: prev?.password || ''
                   }))}
@@ -86,7 +91,6 @@ const Login = () => {
                   placeholder="••••••••"
                   value={formData?.password}
                   onChange={(e) => setFormData(prev => ({
-                    fullName: prev?.fullName || '',
                     email: prev?.email || '',
                     password: e.target.value
                   }))}

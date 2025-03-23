@@ -85,21 +85,25 @@ export const Register = async (req:Request,res:Response) => {
 
 // ? LOGIN ? \\
 export const Login = async (req:Request,res:Response) => {
-
     const {email,password} = req.body;
+    
+    console.log("Login attempt with:", { email, password: password ? "***" : undefined });
 
     try {
+        if (!email || !password) {
+            return res.status(400).json({message:"Email and password are required"});
+        }
         
         const user = await User.findOne({email})
 
         if(!user){
-            return res.status(400).json({message:"Credentials Are Invalid , Please Try Again !"})
+            return res.status(400).json({message:"Credentials Are Invalid, Please Try Again!"});
         }
 
         const IsPasswordCorrect = await bcryptjs.compare(password,user.password)
 
         if(!IsPasswordCorrect){
-            return res.status(400).json({message:"Credentials Are Invalid , Please Try Again !"})
+            return res.status(400).json({message:"Credentials Are Invalid, Please Try Again!"});
         }
 
         CreateToken(user._id as any, res)
@@ -110,14 +114,10 @@ export const Login = async (req:Request,res:Response) => {
             email:user.email,
             profilePicture:user.profilePicture
         })
-
     } catch (error) {
-        
-        res.status(500).json({message:"Internal Server Error"})
-        console.log(error);
-
+        console.error("Login error on server:", error);
+        res.status(500).json({message:"Internal Server Error"});
     }
-
 }
 // ? LOGIN ? \\
 

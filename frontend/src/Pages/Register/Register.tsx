@@ -7,18 +7,23 @@ import toast from "react-hot-toast";
 
 const Register = () => {
 
+  // ? Submit Form Interface ? \\
   interface FormData {
     fullName: string,
     email: string,
     password: string
   }
+  // ? Submit Form Interface ? \\
+
 
   const [showMyPassword, setShowMyPassword] = useState<boolean>(false)
   const [formData, setFormData] = useState<FormData>()
   
 
+  // ? Register Things From Store ? \\
   const register = useAuthenticationStore(state => state.register);
   const isRegistering = useAuthenticationStore(state => state.isRegistering);
+  // ? Register Things From Store ? \\
 
 
 

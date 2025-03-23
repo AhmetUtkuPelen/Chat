@@ -31,9 +31,7 @@ export const AuthenticationMiddleware = async (req:Request, res:Response, next:N
         next();
     
     } catch (error) {
-    
         res.status(500).json({message:"Internal Server Error"});
         console.log(error);
-    
     }
 }

@@ -2,7 +2,9 @@ import { Users } from "lucide-react";
 
 const SkeletonSideBar = () => {
 
+  // ? Skeleton Contacts ? \\
     const skeletonContacts = Array(8).fill(null);
+  // ? Skeleton Contacts ? \\
 
   return (
     <aside

@@ -5,8 +5,15 @@ import { LogOut, MessageCircle, Settings, User } from "lucide-react"
 
 const Navbar = () => {
 
+  // ? Auth User From Store ? \\
   const {authUser} = useAuthenticationStore()
+  // ? Auth User From Store ? \\
+
+
+  // ? Logout From Store ? \\
   const logout = useAuthenticationStore((state: any) => state.logout)
+  // ? Logout From Store ? \\
+
 
   return (
     <header className="bg-base-100 border-b border-base-300 fixed w-full top-0 z-40 backdrop-blur-lg bg-base-100/80">
@@ -27,8 +34,7 @@ const Navbar = () => {
             <span className="hidden sm:inline text-blue-500">Settings</span>
           </Link>
 
-
-          {authUser && (
+          {authUser ? (
             <>
               <Link to={"/profile"} className="btn btn-sm gap-2 transition-colors bg-white">
                 <User className="size-5 text-blue-500"/>
@@ -39,9 +45,19 @@ const Navbar = () => {
                 <LogOut className="size-5 text-red-500"/>
               </button>
             </>
+          ) : (
+            <>
+              <Link to={"/login"} className="btn btn-sm gap-2 transition-colors bg-white">
+                <User className="size-5 text-blue-500"/>
+                <span className="hidden sm:inline text-blue-500">Login</span>
+              </Link>
+              
+              <Link to={"/register"} className="btn btn-sm gap-2 transition-colors bg-white">
+                <User className="size-5 text-blue-500"/>
+                <span className="hidden sm:inline text-blue-500">Register</span>
+              </Link>
+            </>
           )}
-
-
         </div>
 
         </div>

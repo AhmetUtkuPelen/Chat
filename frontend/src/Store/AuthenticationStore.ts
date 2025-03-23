@@ -16,7 +16,7 @@ interface AuthState {
     updateProfile: (data: {fullName: string, email: string, profilePicture: string}) => Promise<void>;
     checkAuth: () => Promise<void>;
     register: (data: {fullName: string, email: string, password: string}) => Promise<void>;
-    login: (data: {fullName: string, email: string, password: string}) => Promise<void>;
+    login: (data: {email: string, password: string}) => Promise<void>;
     logout: () => Promise<void>;
     connectSocket: () => void;
     disconnectSocket: () => void;
@@ -85,18 +85,24 @@ export const useAuthenticationStore = create<AuthState>((set,get) => ({
         }
     },
 
-    login: async (data: {fullName: string, email: string, password: string}) => {
+    login: async (data: {email: string, password: string}) => {
         set({ isLoggingIn: true });
         try {
+            console.log("Sending login request with:", data);
             const response = await axiosSetup.post(`/auth/login`, data);
             set({ authUser: response.data });
             toast.success("User Logged In Successfully !");
 
             get().connectSocket();
         } catch (error) {
-            toast.error("Something Went Wrong !");
-            console.error("Login error:", error);
-        }finally {
+            if (axios.isAxiosError(error)) {
+                console.error("Login error details:", error.response?.data);
+                toast.error(error.response?.data?.message || "Login failed!");
+            } else {
+                toast.error("Something Went Wrong!");
+                console.error("Login error:", error);
+            }
+        } finally {
             set({ isLoggingIn: false });
         }
     },
@@ -115,26 +121,42 @@ export const useAuthenticationStore = create<AuthState>((set,get) => ({
         }
     },
 
-    connectSocket : async () => {
-
+    connectSocket: async () => {
         const {authUser} = get();
 
-        if(!authUser || get().socket?.connected) return;
+        if(!authUser) {
+            console.log("No auth user, skipping socket connection");
+            return;
+        }
+        
+        if(get().socket?.connected) {
+            console.log("Socket already connected, skipping");
+            return;
+        }
 
-        const socket = io(import.meta.env.VITE_SOCKET_URL,{
-            query:{
-                userId:authUser?._id
+        console.log("Connecting socket for user:", authUser._id);
+        
+        const socket = io(import.meta.env.VITE_SOCKET_URL, {
+            auth: {
+                userId: authUser._id
             }
-        })
+        });
+        
+        socket.on("connect", () => {
+            console.log("Socket connected successfully with ID:", socket.id);
+        });
+        
+        socket.on("connect_error", (error) => {
+            console.error("Socket connection error:", error);
+        });
         
         socket.connect();
+        set({socket: socket});
 
-        set({socket:socket});
-
-        socket.on("getOnlineUsers",(users:string[]) => {
-            set({onlineUsers:users})
-        })
-
+        socket.on("getOnlineUsers", (users: string[]) => {
+            console.log("Received online users from server:", users);
+            set({onlineUsers: users});
+        });
     },
 
     disconnectSocket : async () => {

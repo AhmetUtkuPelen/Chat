@@ -1,11 +1,10 @@
 import { ConnectDataBase } from './../DataBase/DataBase';
 import { config } from "dotenv";
-import User from "../Models/UserModel";  // Remove the .ts extension
+import User from "../Models/UserModel";
+import bcryptjs from 'bcryptjs';
 
 // ? Load environment variables from .env file
 config();
-// ? Load environment variables from .env file
-
 
 const UserFarm = [
   // ? Woman Users ? \\
@@ -77,13 +76,13 @@ const UserFarm = [
     email: "sauron@example.com",
     fullName: "Sauron",
     password: "123456",
-    profilePicture: "https://images.wallpapersden.com/image/wxl-sauron-lord-of-the-rings_65183.jpg",
-    },
+    profilePicture: "https://images.wallpapersden.com/image/wxl-sauron-lord-of-the-rings_65183.jpg"
+  },
   {
     email: "soldier.boy@example.com",
     fullName: "Soldier Boy",
     password: "123456",
-    profilePicture: "https://images.wallpapersden.com/image/download/jensen-ackles-as-soldier-boy-the-boys_bWhtaGaUmZqaraWkpJRoZWVlrWdlZWU.jpg",
+    profilePicture: "https://wallpapercave.com/wp/wp11453562.jpg",
   },
   {
     email: "pala@example.com",
@@ -115,14 +114,24 @@ const UserFarm = [
 const UserFarmDatabase = async () => {
   try {
     await ConnectDataBase();
-
-    await User.insertMany(UserFarm);
-    console.log("Database Farmed successfully");
+    
+    // ? Delete existing users ? \\
+    await User.deleteMany({});
+    
+    // ? Hash passwords before pushing into the database ? \\
+    const salt = await bcryptjs.genSalt(10);
+    const usersWithHashedPasswords = await Promise.all(
+      UserFarm.map(async (user) => ({
+        ...user,
+        password: await bcryptjs.hash(user.password, salt)
+      }))
+    );
+    
+    await User.insertMany(usersWithHashedPasswords);
+    console.log("Database Farmed successfully with hashed passwords");
   } catch (error) {
     console.error("Error Farming database:", error);
   }
 };
-
-
 
 UserFarmDatabase();

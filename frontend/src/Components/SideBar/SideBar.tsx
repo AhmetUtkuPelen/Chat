@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ChatStore } from "../../Store/ChatStore"
+import { useAuthenticationStore } from "../../Store/AuthenticationStore";
 import SkeletonSideBar from "../SkeletonSideBar/SkeletonSideBar";
 import { Users } from "lucide-react";
 import UserPng from "../../assets/user.png"
@@ -8,25 +9,42 @@ import {User} from "../../Store/ChatStore"
 
 export const SideBar = () => {
 
+  // ? Users ? \\
     const users: User[] = ChatStore().users;
+  // ? Users ? \\
 
 
-    const {getUsers, selectedUser, selectUser, isUsersLoading, OnlineUsers} = ChatStore()
+    const {getUsers, selectedUser, selectUser, isUsersLoading, OnlineUsers} = ChatStore();
+    const authOnlineUsers = useAuthenticationStore(state => state.onlineUsers);
     const [showOnlineOnly, setShowOnlineOnly] = useState<boolean>(false);
 
+    // Use both sources of online users
+    const allOnlineUsers = [...new Set([...OnlineUsers, ...authOnlineUsers])];
+    
+    console.log("SideBar rendering with online users:", allOnlineUsers);
 
+    // ? Filtered users ? \\
     const filteredUsers = showOnlineOnly
-    ? users.filter((user) => OnlineUsers.includes(user?._id))
+    ? users.filter((user) => allOnlineUsers.includes(user?._id))
     : users;
+    // ? Filtered users ? \\
 
 
-    useEffect(()=> {
-        getUsers()
-    },[getUsers])
+    useEffect(() => {
+        console.log("Online users in sidebar:", allOnlineUsers);
+        getUsers();
+    }, [authOnlineUsers, OnlineUsers]);
 
 
+    useEffect(() => {
+        getUsers();
+    }, [getUsers]);
+
+    // ? Skeleton Loading ? \\
     if(isUsersLoading) return <SkeletonSideBar/>
+    // ? Skeleton Loading ? \\
 
+    if(!users) return null;
     
   return (
     <aside className="h-full w-20 lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200">
@@ -46,7 +64,7 @@ export const SideBar = () => {
             />
             <span className="text-sm">Show online only</span>
           </label>
-          <span className="text-xs text-zinc-500">({OnlineUsers.length} online)</span>
+          <span className="text-xs text-zinc-500">({allOnlineUsers.length} online)</span>
         </div>
       </div>
         {/*  ? Online filter toggle ? */}
@@ -69,7 +87,7 @@ export const SideBar = () => {
                 alt={user.fullName}
                 className="size-12 object-cover rounded-full"
               />
-              {OnlineUsers.includes(user?._id) && (
+              {allOnlineUsers.includes(user?._id) && (
                 <span
                   className="absolute bottom-0 right-0 size-3 bg-green-500 
                   rounded-full ring-2 ring-zinc-900"
@@ -81,7 +99,7 @@ export const SideBar = () => {
             <div className="hidden lg:block text-left min-w-0">
               <div className="font-medium truncate">{user.fullName}</div>
               <div className="text-sm text-zinc-400">
-                {OnlineUsers.includes(user?._id) ? "Online" : "Offline"}
+                {allOnlineUsers.includes(user?._id) ? "Online" : "Offline"}
               </div>
             </div>
           </button>

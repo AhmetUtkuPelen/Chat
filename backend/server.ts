@@ -21,7 +21,7 @@ const port = process.env.PORT || 9999;
 
 
 
-// ? Middleware ? \\
+// ? Middlewares ? \\
 app.use(cors({
     origin: "http://localhost:5173",
     credentials: true,
@@ -32,21 +32,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(helmet());
-// ? Middleware ? \\
+// ? Middlewares ? \\
 
 
 
-// ? Database Connection ? \\
+// ? Database Connection Function ? \\
 ConnectDataBase();
-// ? Database Connection ? \\
+// ? Database Connection Function ? \\
 
 
 
 
-// ? Routes ? \\
+// ? API Routes ? \\
 app.use('/api/auth',AuthenticationRouter)
 app.use('/api/messages',MessageRouter)
-// ? Routes ? \\
+// ? API Routes ? \\
 
 
 

@@ -8,6 +8,7 @@ const Profile = () => {
   const {authUser,isUpdatingProfile,updateProfile} = useAuthenticationStore()
   const [selectedPicture, setSelectedPicture] = useState<string | null>(null)
 
+  // ? Handle Image Upload ? \\
   const HandleImageUpload = async (e:React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const file = e.target.files?.[0];
@@ -28,6 +29,7 @@ const Profile = () => {
     }
 
   }
+  // ? Handle Image Upload ? \\
 
   return (
     <div className="h-screen pt-20">
