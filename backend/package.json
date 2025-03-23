@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "dist/server.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "dev": "nodemon server.ts",
