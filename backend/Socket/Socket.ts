@@ -1,4 +1,4 @@
-import {Server} from 'socket.io'
+import {Server, Socket} from 'socket.io'
 import http from 'http'
 import express from 'express'
 
@@ -34,32 +34,25 @@ export const GetSocketId = async (userId:string) => {
 
 
 // ? Socket Connection ? \\
-io.on("connection", (socket: any) => {
-    console.log(`User Connected ${socket.id}`);
+io.on("connection", (socket: Socket) => {
 
     const userId = socket.handshake.auth.userId;
-    console.log("User connected with ID:", userId);
 
     if(!userId) {
-        console.log("No user ID provided, disconnecting socket");
         socket.disconnect();
         return;
     }
 
     // Store the user's socket ID
     UserSocket[userId] = socket.id;
-    console.log("Updated UserSocket map:", UserSocket);
 
     // Broadcast online users to all clients
     const onlineUsers = Object.keys(UserSocket);
-    console.log("Broadcasting online users:", onlineUsers);
     io.emit("getOnlineUsers", onlineUsers);
 
     // Handle disconnection
     socket.on("disconnect", () => {
-        console.log(`User Disconnected ${socket.id} with ID ${userId}`);
         delete UserSocket[userId];
-        console.log("Updated UserSocket map after disconnect:", UserSocket);
         io.emit("getOnlineUsers", Object.keys(UserSocket));
     });
 }); // ? Socket Connection ? \\

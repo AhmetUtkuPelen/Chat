@@ -15,7 +15,7 @@ function App() {
   const authUser = useAuthenticationStore(state => state.authUser);
   const checkAuth = useAuthenticationStore(state => state.checkAuth);
   const isCheckingAuth = useAuthenticationStore(state => state.isCheckingAuth);
-  const onlineUsers = useAuthenticationStore(state => state.onlineUsers);
+  // const onlineUsers = useAuthenticationStore(state => state.onlineUsers);
   
   // Fix the theme access
   const theme = ThemeStore(state => state.theme);
@@ -29,12 +29,11 @@ function App() {
       }
     }, 3000);
     
+
+
     return () => clearTimeout(timer);
   }, []);
   
-  useEffect(() => {
-    console.log("Online Users:", onlineUsers);
-  }, [onlineUsers]);
 
   if(isCheckingAuth) {
     return (

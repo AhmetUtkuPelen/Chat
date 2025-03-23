@@ -52,12 +52,12 @@ export const Register = async (req:Request,res:Response) => {
         if(newUser){
         
             // ? jwt ? \\
-            CreateToken(newUser._id as any, res)
+            CreateToken(newUser?._id.toString(), res)
 
             await newUser.save()
 
             return res.status(201).json({
-                _id:newUser._id,
+                _id:newUser?._id,
                 fullName:newUser.fullName,
                 email:newUser.email,
                 profilePicture:newUser.profilePicture
@@ -87,8 +87,6 @@ export const Register = async (req:Request,res:Response) => {
 export const Login = async (req:Request,res:Response) => {
     const {email,password} = req.body;
     
-    console.log("Login attempt with:", { email, password: password ? "***" : undefined });
-
     try {
         if (!email || !password) {
             return res.status(400).json({message:"Email and password are required"});
@@ -106,10 +104,10 @@ export const Login = async (req:Request,res:Response) => {
             return res.status(400).json({message:"Credentials Are Invalid, Please Try Again!"});
         }
 
-        CreateToken(user._id as any, res)
+        CreateToken(user?._id.toString(), res)
 
         res.status(200).json({
-            _id:user._id,
+            _id:user?._id,
             fullName:user.fullName,
             email:user.email,
             profilePicture:user.profilePicture
@@ -202,7 +200,7 @@ export const UpdateUserProfile = async (req:Request,res:Response) => {
         
         // ? Return updated user data ? \\
         return res.status(200).json({
-            _id: updatedUser._id,
+            _id: updatedUser?._id,
             fullName: updatedUser.fullName,
             email: updatedUser.email,
             profilePicture: updatedUser.profilePicture

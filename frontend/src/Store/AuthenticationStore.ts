@@ -4,10 +4,11 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 import { Socket } from "socket.io-client";
+import { User } from "./ChatStore";
 
 
 interface AuthState {
-    authUser: any;
+    authUser: User | null;
     isRegistering: boolean;
     isLoggingIn: boolean;
     isUpdatingProfile: boolean;
@@ -88,7 +89,6 @@ export const useAuthenticationStore = create<AuthState>((set,get) => ({
     login: async (data: {email: string, password: string}) => {
         set({ isLoggingIn: true });
         try {
-            console.log("Sending login request with:", data);
             const response = await axiosSetup.post(`/auth/login`, data);
             set({ authUser: response.data });
             toast.success("User Logged In Successfully !");
@@ -125,38 +125,65 @@ export const useAuthenticationStore = create<AuthState>((set,get) => ({
         const {authUser} = get();
 
         if(!authUser) {
-            console.log("No auth user, skipping socket connection");
             return;
         }
         
+        // Disconnect existing socket if any
         if(get().socket?.connected) {
-            console.log("Socket already connected, skipping");
-            return;
+            get().socket?.disconnect();
         }
 
-        console.log("Connecting socket for user:", authUser._id);
-        
         const socket = io(import.meta.env.VITE_SOCKET_URL, {
-            auth: {
-                userId: authUser._id
-            }
+            auth: { userId: authUser?._id },
+            transports: ['websocket'],
+            autoConnect: false,
+            reconnection: true,
+            reconnectionAttempts: 5
         });
         
+        // Set up event handlers before connecting
         socket.on("connect", () => {
-            console.log("Socket connected successfully with ID:", socket.id);
+            socket.emit("getOnlineUsers");
         });
         
         socket.on("connect_error", (error) => {
-            console.error("Socket connection error:", error);
+            console.error("Socket connection error:", error.message);
         });
-        
-        socket.connect();
-        set({socket: socket});
+
+        socket.on("disconnect", (reason) => {
+            console.log("Socket disconnected:", reason);
+        });
 
         socket.on("getOnlineUsers", (users: string[]) => {
-            console.log("Received online users from server:", users);
             set({onlineUsers: users});
         });
+
+        socket.on("userConnected", (userId: string) => {
+            set(state => {
+                const newOnlineUsers = [...new Set([...state.onlineUsers, userId])];
+                return {onlineUsers: newOnlineUsers};
+            });
+        });
+
+        socket.on("userDisconnected", (userId: string) => {
+
+            set(state => {
+                const newOnlineUsers = state.onlineUsers.filter(id => id !== userId);
+                return {onlineUsers: newOnlineUsers};
+            });
+        });
+        
+        // Set socket first, then connect
+        set({socket: socket});
+
+        socket.connect();
+
+        // Request online users list after a short delay to ensure connection is established
+        setTimeout(() => {
+            if (socket.connected) {
+                socket.emit("getOnlineUsers");
+            }
+        }, 1000);
     },
 
     disconnectSocket : async () => {

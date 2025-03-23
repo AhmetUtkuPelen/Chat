@@ -9,10 +9,24 @@ import UserPng from "../../assets/user.png"
 
 const ChatComponent = () => {
 
+
+  // ? Message Interface ? \\
+  interface Message {
+    _id: string;
+    senderId: string;
+    createdAt: string; // or Date if that fits your usage
+    image?: string;
+    text?: string;
+}
+  // ? Message Interface ? \\
+
+
+
+
   // ? Chat Store ? \\
   const {selectedUser, messages, getMessages, isMessagesLoading,receiveMessages,unReceiveMessages} = ChatStore() as {
     selectedUser: { _id: string, profilePicture?: string, fullName?: string } | null,
-    messages: any[],
+    messages: Message[],
     getMessages: (id: string) => void,
     isMessagesLoading: boolean
     receiveMessages: () => void
@@ -29,7 +43,7 @@ const ChatComponent = () => {
   const EndMessage = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if(selectedUser) getMessages(selectedUser._id);
+    if(selectedUser) getMessages(selectedUser?._id);
   }, [selectedUser, getMessages])
 
   
@@ -70,11 +84,11 @@ const ChatComponent = () => {
       <ChatHeader/>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message:any,index:number) => (
+        {messages.map((message:Message,index:number) => (
           <div className={`chat ${message.senderId === authUser?._id ? "chat-end" : "chat-start"}`} key={index} ref={EndMessage}>
             <div className="chat-image avatar">
               <div className="size-10 rounded-full border">
-              <img src={message.senderId === authUser?._id ? authUser.profilePicture || UserPng : selectedUser?.profilePicture || UserPng} alt="User Avatar" />
+              <img src={message.senderId === authUser?._id ? authUser?.profilePicture || UserPng : selectedUser?.profilePicture || UserPng} alt="User Avatar" />
               </div>
             </div>
 

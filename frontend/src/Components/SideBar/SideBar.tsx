@@ -21,8 +21,6 @@ export const SideBar = () => {
     // Use both sources of online users
     const allOnlineUsers = [...new Set([...OnlineUsers, ...authOnlineUsers])];
     
-    console.log("SideBar rendering with online users:", allOnlineUsers);
-
     // ? Filtered users ? \\
     const filteredUsers = showOnlineOnly
     ? users.filter((user) => allOnlineUsers.includes(user?._id))
@@ -31,7 +29,6 @@ export const SideBar = () => {
 
 
     useEffect(() => {
-        console.log("Online users in sidebar:", allOnlineUsers);
         getUsers();
     }, [authOnlineUsers, OnlineUsers]);
 
@@ -64,7 +61,7 @@ export const SideBar = () => {
             />
             <span className="text-sm">Show online only</span>
           </label>
-          <span className="text-xs text-zinc-500">({allOnlineUsers.length} online)</span>
+          <span className="text-xs text-zinc-500">({allOnlineUsers.length -1} online)</span>
         </div>
       </div>
         {/*  ? Online filter toggle ? */}
@@ -73,12 +70,12 @@ export const SideBar = () => {
       <div className="overflow-y-auto w-full py-3">
         {filteredUsers.map((user) => (
           <button
-            key={user._id}
+            key={user?._id}
             onClick={() => selectUser(user)}
             className={`
               w-full p-3 flex items-center gap-3
               hover:bg-base-300 transition-colors
-              ${selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-base-300" : ""}
+              ${selectedUser?._id === user?._id ? "bg-base-300 ring-1 ring-base-300" : ""}
             `}
           >
             <div className="relative mx-auto lg:mx-0">

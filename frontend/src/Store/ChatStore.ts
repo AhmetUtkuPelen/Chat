@@ -59,9 +59,9 @@ export const ChatStore = create<ChatState>()((set, get) => ({
             const response = await axiosSetup.get(`/messages/users`);
             set({ users: response.data });
             
-            // Update OnlineUsers from AuthStore
-            set({ OnlineUsers: useAuthenticationStore.getState().onlineUsers });
-            console.log("Updated OnlineUsers in ChatStore:", useAuthenticationStore.getState().onlineUsers);
+            // ? Get latest online users ? \\
+            const currentOnlineUsers = useAuthenticationStore.getState().onlineUsers;
+            set({ OnlineUsers: currentOnlineUsers });
         } catch (error) {
             toast.error("Something Went Wrong!");
             console.error("Users fetch error:", error);
@@ -91,7 +91,7 @@ export const ChatStore = create<ChatState>()((set, get) => ({
         const {selectedUser,messages} = get();
         if (!selectedUser) return;
         try {
-            const response = await axiosSetup.post(`/messages/${selectedUser._id}`, messageData);
+            const response = await axiosSetup.post(`/messages/${selectedUser?._id}`, messageData);
             set({ messages: [...messages, response.data] });
         } catch (error) {
             toast.error("Something Went Wrong !");
@@ -109,7 +109,7 @@ export const ChatStore = create<ChatState>()((set, get) => ({
 
         if (socket) {
             socket.on("getMessage", (message:Message) => {
-                if(message.senderId !== selectedUser._id) return;
+                if(message.senderId !== selectedUser?._id) return;
                 set({
                     messages : [...get().messages,message]   
                 })
@@ -131,8 +131,9 @@ export const ChatStore = create<ChatState>()((set, get) => ({
 }));
 
 // Subscribe to changes in the AuthStore's onlineUsers
-useAuthenticationStore.subscribe((state) => {
-    const onlineUsers = state.onlineUsers;
-    ChatStore.setState({ OnlineUsers: onlineUsers });
-    console.log("ChatStore OnlineUsers updated from subscription:", onlineUsers);
+useAuthenticationStore.subscribe((state, prevState) => {
+    if (state.onlineUsers !== prevState?.onlineUsers) {
+        const onlineUsers = state.onlineUsers;
+        ChatStore.setState({ OnlineUsers: onlineUsers });
+    }
 });
