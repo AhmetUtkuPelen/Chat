@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
@@ -8,6 +8,8 @@ import AuthenticationRouter from './Routes/AuthenticationRoutes';
 import MessageRouter from './Routes/MessageRouter';
 import {ConnectDataBase} from './DataBase/DataBase'
 import {app,server} from './Socket/Socket';
+import path from 'path';
+
 
 // ? Config .env ? \\
 dotenv.config();
@@ -16,9 +18,11 @@ dotenv.config();
 
 
 // ? PORT ? \\
-const port = process.env.PORT || 9999;
+const port = process.env.PORT;
 // ? PORT ? \\
 
+
+const __dirname = path.resolve();
 
 
 // ? Middlewares ? \\
@@ -48,6 +52,16 @@ app.use('/api/auth',AuthenticationRouter)
 app.use('/api/messages',MessageRouter)
 // ? API Routes ? \\
 
+
+
+// ? HOSTING ? \\
+if(process.env.NODE_ENV === 'production'){
+  app.use(express.static(path.join(__dirname, '/frontend/dist')));
+  app.get("*",(req:Request,res:Response) => {
+    res.sendFile(path.join(__dirname, '/frontend/dist/index.html'));
+  })
+}
+// ? HOSTING ? \\
 
 
   

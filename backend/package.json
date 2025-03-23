@@ -4,7 +4,8 @@
   "main": "server.ts",
   "scripts": {
     "build": "tsc",
-    "start": "nodemon server.ts"
+    "dev": "nodemon server.ts",
+    "start": "node server.ts"
   },
   "keywords": [],
   "author": "",
@@ -34,6 +35,7 @@
     "@types/socket.io": "^3.0.1",
     "backend": "file:",
     "bcryptjs": "^3.0.2",
+    "chat": "file:..",
     "cloudinary": "^2.6.0",
     "cookie-parser": "^1.4.7",
     "helmet": "^8.0.0",

@@ -7,6 +7,10 @@ import { Socket } from "socket.io-client";
 import { User } from "./ChatStore";
 
 
+
+const Back_End_URL = import.meta.env.MODE === "development" ? import.meta.env.VITE_SOCKET_URL : "/api";
+
+
 interface AuthState {
     authUser: User | null;
     isRegistering: boolean;
@@ -133,7 +137,7 @@ export const useAuthenticationStore = create<AuthState>((set,get) => ({
             get().socket?.disconnect();
         }
 
-        const socket = io(import.meta.env.VITE_SOCKET_URL, {
+        const socket = io(Back_End_URL, {
             auth: { userId: authUser?._id },
             transports: ['websocket'],
             autoConnect: false,
